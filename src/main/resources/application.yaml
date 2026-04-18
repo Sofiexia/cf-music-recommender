@@ -1,0 +1,48 @@
+spring:
+  application:
+    name: music-recommend
+
+  # 数据源配置
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/music_db?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&blobSendStream=false&clobCharacterEncoding=UTF-8
+    username: root
+    password: 666666
+
+  # Redis 配置
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password:        # 若无密码则留空
+      database: 0
+      timeout: 2000ms
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+
+# MyBatis-Plus 配置（可选）
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/**/*.xml
+  type-aliases-package: com.example.musicrecommend.entity
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true
+
+# 日志配置（便于查看 SQL 执行）
+logging:
+  level:
+    com.example.musicrecommend.mapper: debug
+
+recommend:
+  service:
+    url: http://localhost:5000
+
+# JWT 配置
+jwt:
+  secret: "your-256-bit-secret-key-change-in-production"  # 至少 32 字节
+  expiration: 86400000  # 过期时间（毫秒），24小时
+  header: "Authorization"
+  prefix: "Bearer "
