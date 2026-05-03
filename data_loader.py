@@ -1,9 +1,9 @@
 import pandas as pd
+import numpy as np
+from scipy.sparse import csr_matrix
 from sqlalchemy import create_engine
 
-
 def load_preference_data():
-    # 数据库连接配置（应与 application.yml 一致）
     engine = create_engine('mysql+pymysql://root:666666@localhost:3306/music_db')
 
     # 获取用户行为，计算偏好分数
@@ -20,11 +20,25 @@ def load_preference_data():
     """
     df = pd.read_sql(query, engine)
 
-    # 转换为用户-音乐矩阵（行：用户，列：音乐）
-    matrix = df.pivot_table(index='user_id', columns='music_id', values='score', fill_value=0)
-    return matrix
+    # 1. 提取独立的用户ID和音乐ID列表 (用于后期将索引映射回真实ID)
+    user_ids = df['user_id'].astype('category').cat.categories.tolist()
+    music_ids = df['music_id'].astype('category').cat.categories.tolist()
 
+    # 2. 将真实的ID映射为从 0 开始的连续索引 (行号和列号)
+    row_idx = df['user_id'].astype('category').cat.codes
+    col_idx = df['music_id'].astype('category').cat.codes
+
+    # 3. 构建 scipy.sparse CSR 稀疏矩阵
+    # csr_matrix((数据, (行索引, 列索引)), 形状=(用户数, 音乐数))
+    sparse_matrix = csr_matrix(
+        (df['score'], (row_idx, col_idx)),
+        shape=(len(user_ids), len(music_ids))
+    )
+
+    # 返回稀疏矩阵，以及对应的用户和音乐ID映射表
+    return sparse_matrix, user_ids, music_ids
 
 if __name__ == "__main__":
-    mat = load_preference_data()
-    print(mat.shape)
+    mat, u_ids, m_ids = load_preference_data()
+    print(f"稀疏矩阵形状: {mat.shape}")
+    print(f"实际存储的数据点数量(非零元素): {mat.nnz}") # 这就是省内存的秘密

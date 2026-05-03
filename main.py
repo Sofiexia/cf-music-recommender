@@ -5,12 +5,13 @@ from recommender import CollaborativeFilter
 app = FastAPI(title="Music Recommendation Service")
 
 # 初始化模型（启动时加载数据）
-print("Loading preference matrix...")
-pref_matrix = load_preference_data()
+print("Loading preference sparse matrix...")
+pref_matrix, user_ids, music_ids = load_preference_data() # 接收三个返回值
 print(f"Matrix shape: {pref_matrix.shape}")
-recommender = CollaborativeFilter(pref_matrix)
-print("Model ready.")
 
+# 将这三个参数传给推荐器
+recommender = CollaborativeFilter(pref_matrix, user_ids, music_ids)
+print("Model ready.")
 @app.get("/")
 async def root():
     return {"message": "Music Recommendation Service is running"}
