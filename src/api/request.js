@@ -32,6 +32,7 @@ request.interceptors.response.use(
           
           // 清理本地存储的废弃数据
           localStorage.removeItem('token');
+          localStorage.removeItem('userType');
           localStorage.removeItem('userInfo');
           
           // 强制跳转回登录页

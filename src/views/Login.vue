@@ -8,6 +8,22 @@
 
       <div class="form-body">
         <div class="form-group">
+          <label>用户类型</label>
+          <div class="user-type-selector">
+            <button
+              v-for="option in userTypeOptions"
+              :key="option.value"
+              type="button"
+              class="type-btn"
+              :class="{ active: loginForm.userType === option.value }"
+              @click="loginForm.userType = option.value"
+            >
+              {{ option.label }}
+            </button>
+          </div>
+        </div>
+
+        <div class="form-group">
           <label>用户名</label>
           <div class="input-wrapper">
             <input 
@@ -54,21 +70,25 @@
 
 <script setup>
 import { ref, reactive } from 'vue';
-import { useRouter } from 'vue-router';
-import request from '../api/request';
-import { loginApi } from '../stores/user';
+import { useRoute, useRouter } from 'vue-router';
+import { login } from '../api/auth';
 
 const router = useRouter();
+const route = useRoute();
 const loading = ref(false);
-const loginError = ref(''); // 专门处理登录失败的提示
+const loginError = ref('');
+const userTypeOptions = [
+  { label: '普通用户', value: 0 },
+  { label: '管理员', value: 1 }
+];
 
 const loginForm = reactive({
   username: '',
-  password: ''
+  password: '',
+  userType: 0
 });
 
 const handleLogin = async () => {
-  // 1. 前端基础校验
   if (!loginForm.username || !loginForm.password) {
     loginError.value = '用户名或密码不能为空';
     return;
@@ -76,31 +96,42 @@ const handleLogin = async () => {
 
   loading.value = true;
   loginError.value = '';
-  const res = await loginApi(loginForm)
-  if (res.code === 200){
-    localStorage.setItem('token', res.data.token)
-    const redirectPath = route.query.redirect || '/'
-    router.push(redirectPath)
-  }
-
   try {
-    // 2. 对接后端 AuthController: @PostMapping("/login")
-    const res = await request.post('/auth/login', loginForm);
-    
-    // 后端封装的 Result 对象
-    if (res.data && res.data.code === 200) {
-      // 保存后端返回的 JWT Token
-      localStorage.setItem('token', res.data.data);
-      
-      // 成功提示并跳转
-      console.log("登录成功，正在跳转...");
-      router.push('/'); 
+    const res = await login(loginForm);
+    const result = res?.data || {};
+    if (result.code === 200) {
+      const responseData = result.data;
+      const token =
+        typeof responseData === 'string'
+          ? responseData
+          : responseData?.token || responseData?.accessToken || '';
+
+      if (!token) {
+        loginError.value = '登录响应异常，请稍后重试';
+        return;
+      }
+
+      const serverUserType = responseData?.userType ?? responseData?.role ?? responseData?.userRole;
+      const normalizedUserType = serverUserType ?? loginForm.userType;
+      const isAdmin =
+        normalizedUserType === 1 ||
+        normalizedUserType === '1' ||
+        String(normalizedUserType).toLowerCase() === 'admin';
+      const userType = isAdmin ? '1' : '0';
+      localStorage.setItem('token', token);
+      localStorage.setItem('userType', userType);
+
+      const redirectPath = typeof route.query.redirect === 'string' ? route.query.redirect : '';
+      if (redirectPath && redirectPath !== '/login') {
+        router.push(redirectPath);
+      } else {
+        router.push(userType === '1' ? '/admin' : '/');
+      }
     } else {
-      // 这里的 res.data.message 可能是 "用户名或密码错误"
-      loginError.value = res.data.message || '登录失败，请检查账号信息';
+      loginError.value = result.message || '登录失败，请检查账号信息';
     }
   } catch (err) {
-    console.error("登录请求异常:", err);
+    console.error('登录请求异常:', err);
     loginError.value = '无法连接服务器，请稍后再试';
   } finally {
     loading.value = false;
@@ -136,6 +167,29 @@ h2 { color: #2c3e50; font-size: 24px; margin-bottom: 8px; }
 
 .form-group { margin-bottom: 24px; position: relative; }
 .form-group label { display: block; margin-bottom: 8px; font-size: 13px; color: #64748b; font-weight: 600; }
+
+.user-type-selector {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.type-btn {
+  padding: 10px 0;
+  border: 1px solid #dbe3ef;
+  border-radius: 10px;
+  background: #f8fafc;
+  color: #64748b;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.type-btn.active {
+  border-color: #1db954;
+  color: #1db954;
+  background: rgba(29, 185, 84, 0.08);
+}
 
 input {
   width: 100%;
