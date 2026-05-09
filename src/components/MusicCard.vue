@@ -41,18 +41,18 @@ const handleImgError = (e: Event) => {
 
 <style scoped>
 .music-item {
-  background: #fff;
-  border-radius: 16px;
+  background: var(--color-surface);
+  border-radius: 18px;
   overflow: hidden;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-  border: 1px solid rgba(0,0,0,0.02);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.04);
 }
 .music-item:hover {
   transform: translateY(-6px);
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-  border-color: rgba(45, 140, 240, 0.1);
+  border-color: rgba(0, 109, 54, 0.2);
 }
 .music-cover-wrapper {
   position: relative;
@@ -74,7 +74,7 @@ const handleImgError = (e: Event) => {
   position: absolute;
   bottom: 8px;
   right: 8px;
-  background: rgba(0,0,0,0.6);
+  background: rgba(0, 0, 0, 0.6);
   color: white;
   padding: 4px 10px;
   border-radius: 20px;
@@ -91,21 +91,21 @@ const handleImgError = (e: Event) => {
 }
 .song-title {
   font-weight: 600;
-  color: #1c2438;
+  color: var(--color-on-surface);
   margin-bottom: 6px;
 }
 .song-title::after {
   content: 'HQ';
   font-size: 10px;
-  color: #2d8cf0;
-  border: 1px solid #2d8cf0;
+  color: var(--color-secondary);
+  border: 1px solid var(--color-secondary);
   border-radius: 3px;
   padding: 0 2px;
   margin-left: 8px;
   vertical-align: middle;
 }
 .song-artist {
-  color: #888;
+  color: rgba(25, 28, 29, 0.55);
   font-size: 13px;
 }
 </style>

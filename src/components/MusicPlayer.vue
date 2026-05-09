@@ -18,18 +18,26 @@
           :class="{ active: currentMusic.isLiked }"
           @click.stop="emit('toggle-like', currentMusic)"
         >
-          <span class="heart-icon">{{ currentMusic.isLiked ? '❤️' : '🤍' }}</span>
+          <Heart
+            class="heart-icon"
+            :fill="currentMusic.isLiked ? 'currentColor' : 'none'"
+          />
         </button>
       </div>
 
       <!-- 中间播放控制 -->
       <div class="player-controls">
         <div class="btn-group">
-          <button class="ctrl-icon">⏮</button>
-          <button class="main-play" @click="togglePlay">
-            {{ isPlaying ? '⏸' : '▶' }}
+          <button class="ctrl-icon" aria-label="上一首">
+            <SkipBack class="ctrl-icon-svg" />
           </button>
-          <button class="ctrl-icon">⏭</button>
+          <button class="main-play" @click="togglePlay">
+            <Pause v-if="isPlaying" class="main-icon" />
+            <Play v-else class="main-icon play-icon" />
+          </button>
+          <button class="ctrl-icon" aria-label="下一首">
+            <SkipForward class="ctrl-icon-svg" />
+          </button>
         </div>
         <div class="progress-wrapper">
           <div class="progress-bar">
@@ -43,7 +51,7 @@
 
       <!-- 右侧音量（示意） -->
       <div class="player-extra">
-        <span class="vol-icon">🔊</span>
+        <Volume2 class="vol-icon" />
         <div class="vol-bar-simple"></div>
       </div>
     </div>
@@ -62,6 +70,7 @@
 import { storeToRefs } from 'pinia'
 import { usePlayerStore } from '../stores/player';
 import { ref, watch, computed,onMounted } from 'vue';
+import { Heart, Pause, Play, SkipBack, SkipForward, Volume2 } from 'lucide-vue-next'
 
 const store = usePlayerStore()
 const defaultCover = new URL('../assets/default-cover.jpg', import.meta.url).href
@@ -167,23 +176,28 @@ const handleCoverError = (e: Event) => {
   bottom: 0;
   left: 0;
   right: 0;
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-top: 1px solid rgba(0, 0, 0, 0.05);
-  height: 88px;
+  padding: 16px 20px 24px;
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   z-index: 2000;
+  pointer-events: none;
 }
 .player-container {
-  max-width: 1400px;
+  max-width: 1200px;
   margin: 0 auto;
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 40px;
+  padding: 16px 20px;
+  height: 96px;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  pointer-events: auto;
 }
 .player-info {
   display: flex;
@@ -191,11 +205,11 @@ const handleCoverError = (e: Event) => {
   width: 30%;
 }
 .mini-cover {
-  width: 56px;
-  height: 56px;
-  border-radius: 12px;
+  width: 54px;
+  height: 54px;
+  border-radius: 14px;
   margin-right: 15px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
   object-fit: cover;
 }
 .mini-cover.rotate {
@@ -211,12 +225,12 @@ const handleCoverError = (e: Event) => {
 .p-song-name {
   display: block;
   font-weight: 600;
-  font-size: 15px;
-  color: #1c2438;
+  font-size: 14px;
+  color: var(--color-on-surface);
 }
 .p-song-artist {
-  font-size: 12px;
-  color: #888;
+  font-size: 11px;
+  color: rgba(25, 28, 29, 0.55);
 }
 .like-btn {
   background: transparent;
@@ -226,22 +240,26 @@ const handleCoverError = (e: Event) => {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.2s ease;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  color: rgba(186, 26, 26, 0.55);
+  transition: transform 0.2s ease, color 0.2s ease, background 0.2s ease;
   outline: none;
 }
 .heart-icon {
-  font-size: 20px;
-  filter: grayscale(100%);
-  opacity: 0.6;
+  width: 18px;
+  height: 18px;
   transition: all 0.3s ease;
 }
 .like-btn.active .heart-icon {
-  filter: grayscale(0%);
-  opacity: 1;
+  color: var(--color-error);
   animation: heart-pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 .like-btn:hover {
-  transform: scale(1.2);
+  transform: scale(1.05);
+  background: rgba(186, 26, 26, 0.12);
+  color: var(--color-error);
 }
 .like-btn:active {
   transform: scale(0.9);
@@ -266,20 +284,38 @@ const handleCoverError = (e: Event) => {
   border: none;
   font-size: 18px;
   cursor: pointer;
-  color: #515a6e;
-  padding: 8px;
+  color: rgba(25, 28, 29, 0.7);
+  padding: 6px;
+  border-radius: 50%;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+.ctrl-icon:hover {
+  color: var(--color-primary);
+  transform: translateY(-1px);
+}
+.ctrl-icon-svg {
+  width: 22px;
+  height: 22px;
 }
 .main-play {
-  background: #2d8cf0;
-  color: white;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
   border: none;
-  width: 44px;
-  height: 44px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   font-size: 20px;
   cursor: pointer;
   margin: 0 20px;
   transition: transform 0.2s;
+  box-shadow: 0 4px 12px rgba(74, 222, 128, 0.3);
+}
+.main-icon {
+  width: 22px;
+  height: 22px;
+}
+.play-icon {
+  transform: translateX(1px);
 }
 .main-play:hover {
   transform: scale(1.1);
@@ -292,12 +328,12 @@ const handleCoverError = (e: Event) => {
 .progress-bar {
   width: 100%;
   height: 4px;
-  background: #eee;
+  background: var(--color-surface-container-high);
   border-radius: 2px;
 }
 .progress-fill {
   height: 100%;
-  background: #2d8cf0;
+  background: linear-gradient(90deg, var(--color-primary-container), var(--color-secondary-container));
   border-radius: 2px;
   transition: width 0.1s linear;
 }
@@ -305,12 +341,17 @@ const handleCoverError = (e: Event) => {
   display: flex;
   align-items: center;
   gap: 10px;
-  color: #808695;
+  color: rgba(25, 28, 29, 0.5);
+}
+
+.vol-icon {
+  width: 18px;
+  height: 18px;
 }
 .vol-bar-simple {
   width: 80px;
   height: 4px;
-  background: #e8eaec;
+  background: var(--color-surface-container-high);
   border-radius: 2px;
 }
 </style>

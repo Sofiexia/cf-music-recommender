@@ -29,47 +29,65 @@ onMounted(() => {
 </script>
 
 <style>
-/* 基础重置，确保全屏显示 */
-html, body, #app {
+html,
+body,
+#app {
   margin: 0;
   padding: 0;
   width: 100%;
-  height: 100%;
-  background-color: #f5f5f7;
+  min-height: 100%;
+  background-color: var(--color-background);
 }
 
 #app-main {
   width: 100%;
-  height: 100%;
+  min-height: 100%;
 }
 
-.global-loading { 
-  position: fixed; 
-  top: 0; left: 0; 
-  width: 100vw; height: 100vh;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  background: rgba(255, 255, 255, 0.9); 
-  color: #333; 
-  z-index: 9999; 
+.global-loading {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--color-on-background);
+  z-index: 9999;
 }
 
-/* 加个简单的加载动画 */
 .spinner {
-  width: 40px; height: 40px;
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid #1db954;
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(0, 0, 0, 0.08);
+  border-top: 4px solid var(--color-primary);
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin-bottom: 10px;
 }
-@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-.toast { 
-  position: fixed; bottom: 40px; left: 50%; 
-  transform: translateX(-50%); 
-  background: rgba(0, 0, 0, 0.8); color: white; 
-  padding: 10px 20px; border-radius: 25px; 
-  z-index: 10000; font-size: 14px;
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.toast {
+  position: fixed;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(15, 15, 15, 0.8);
+  color: #ffffff;
+  padding: 10px 20px;
+  border-radius: 25px;
+  z-index: 10000;
+  font-size: 14px;
 }
 </style>

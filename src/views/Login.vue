@@ -3,7 +3,7 @@
     <div class="login-card">
       <div class="login-header">
         <h2>欢迎回来</h2>
-        <p class="subtitle">登录 拾音集 发现更多好音乐</p>
+        <p class="subtitle">登录 基于协同过滤的智能音乐推荐系统 发现更多好音乐</p>
       </div>
 
       <div class="form-body">

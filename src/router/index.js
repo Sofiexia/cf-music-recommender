@@ -3,10 +3,24 @@ import Login from '../views/Login.vue'
 import Register from '../views/Register.vue'
 import Home from '../views/Home.vue'
 import AdminHome from '../views/AdminHome.vue'
+import Dashboard from '../views/Dashboard.vue'
+import UserManagement from '../views/UserManagement.vue'
+import EngineMonitor from '../views/EngineMonitor.vue'
+import MusicLibrary from '../views/MusicLibrary.vue'
 
 const routes = [
   { path: '/', component: Home },
-  { path: '/admin', component: AdminHome },
+  {
+    path: '/admin',
+    component: AdminHome,
+    children: [
+      { path: '', redirect: '/admin/dashboard' },
+      { path: 'dashboard', component: Dashboard },
+      { path: 'users', component: UserManagement },
+      { path: 'library', component: MusicLibrary },
+      { path: 'monitor', component: EngineMonitor }
+    ]
+  },
   { path: '/login', component: Login },
   { path: '/register', component: Register }
 ]
@@ -31,11 +45,11 @@ router.beforeEach((to, from, next) => {
   }
 
   if (token && to.path === '/login') {
-    next(isAdmin ? '/admin' : '/')
+    next(isAdmin ? '/admin/dashboard' : '/')
     return
   }
 
-  if (to.path === '/admin' && !isAdmin) {
+  if (to.path.startsWith('/admin') && !isAdmin) {
     next('/')
     return
   }

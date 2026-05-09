@@ -1,7 +1,7 @@
 <template>
   <div class="register-container">
     <div class="register-card">
-      <h2>加入 拾音集</h2>
+      <h2>加入 基于协同过滤的智能音乐推荐系统</h2>
       <p class="subtitle">创建账号，开启你的音乐之旅</p>
 
       <div class="form-body">
@@ -124,7 +124,7 @@ const handleRegister = async () => {
     
     if (res.data.code === 200) {
       // 成功后的反馈
-      alert("🎉 注册成功！欢迎加入 拾音集");
+      alert("注册成功！欢迎加入 基于协同过滤的智能音乐推荐系统");
       router.push('/login');
     } else {
       // 处理后端返回的业务错误（如：邮箱已存在、用户名已存在）

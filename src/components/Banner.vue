@@ -1,23 +1,28 @@
 <template>
-  <section class="banner-container">
-    <div class="banner-card">
-      <div class="banner-info">
-        <span class="banner-tag">每日精选</span>
-        <h1 class="banner-title">拾取城市里的最后一片声音</h1>
-        <p class="banner-subtitle">
-          探索由 AI 为你定制的私人旋律，发现那些藏在时光里的好音乐。
+  <section class="hero">
+    <img
+      class="hero-image"
+      src="https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=1600&q=80"
+      alt="Hero"
+    />
+    <div class="hero-overlay">
+      <div class="hero-content">
+        <span class="hero-badge">Editor's Choice</span>
+        <h1 class="hero-title">
+          寻找你灵魂的
+          <span>旋律</span>
+        </h1>
+        <p class="hero-subtitle">
+          基于协同过滤的智能音乐推荐系统 AI 引擎已根据您的听歌偏好，为您整理出本周最懂您的 20 首动听曲目。
         </p>
-        <div class="banner-btns">
+        <div class="hero-actions">
           <button class="btn-primary" @click="emit('start-radio')">
-            ▶ 开启私人漫游
+            立即播放
           </button>
           <button class="btn-secondary" @click="emit('learn-more')">
-            了解更多
+            查看详情
           </button>
         </div>
-      </div>
-      <div class="banner-visual">
-        <div class="visual-circle"></div>
       </div>
     </div>
   </section>
@@ -31,93 +36,109 @@ const emit = defineEmits<{
 </script>
 
 <style scoped>
-.banner-container {
-  margin-bottom: 40px;
-}
-.banner-card {
+.hero {
   position: relative;
-  height: 280px;
-  background: linear-gradient(135deg, #6e8efb 0%, #2d8cf0 100%);
-  border-radius: 24px;
-  padding: 40px 50px;
-  color: white;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  height: 380px;
+  border-radius: 32px;
   overflow: hidden;
-  box-shadow: 0 20px 40px rgba(45, 140, 240, 0.2);
+  margin-bottom: 32px;
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.15);
 }
-.banner-info {
-  position: relative;
-  z-index: 2;
-  max-width: 500px;
+
+.hero-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 1s ease;
 }
-.banner-tag {
+
+.hero:hover .hero-image {
+  transform: scale(1.05);
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.1));
+  display: flex;
+  align-items: center;
+}
+
+.hero-content {
+  padding: 40px 56px;
+  color: #ffffff;
+  max-width: 560px;
+}
+
+.hero-badge {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 999px;
   background: rgba(255, 255, 255, 0.2);
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 11px;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.2em;
+  margin-bottom: 16px;
 }
-.banner-title {
-  font-size: 36px;
+
+.hero-title {
+  font-size: 42px;
   font-weight: 800;
-  margin: 16px 0;
-  line-height: 1.2;
+  margin: 0 0 16px;
+  line-height: 1.1;
 }
-.banner-subtitle {
+
+.hero-title span {
+  color: var(--color-primary-container);
+}
+
+.hero-subtitle {
   font-size: 16px;
-  opacity: 0.9;
-  margin-bottom: 30px;
+  opacity: 0.85;
+  margin-bottom: 24px;
   line-height: 1.6;
 }
-.banner-btns {
+
+.hero-actions {
   display: flex;
-  gap: 15px;
+  gap: 14px;
+  flex-wrap: wrap;
 }
+
 .btn-primary {
-  background: white;
-  color: #2d8cf0;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
   border: none;
-  padding: 12px 24px;
-  border-radius: 12px;
-  font-weight: 600;
+  padding: 12px 26px;
+  border-radius: 999px;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.3s;
+  box-shadow: 0 12px 24px rgba(0, 109, 54, 0.25);
 }
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(255, 255, 255, 0.3);
-}
+
 .btn-secondary {
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  padding: 12px 24px;
-  border-radius: 12px;
-  font-weight: 600;
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  padding: 12px 26px;
+  border-radius: 999px;
+  font-weight: 700;
   cursor: pointer;
-  backdrop-filter: blur(5px);
+  backdrop-filter: blur(6px);
 }
-.banner-visual {
-  position: absolute;
-  right: -50px;
-  top: -50px;
-  width: 300px;
-  height: 300px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 50%;
-  z-index: 1;
-}
-.visual-circle {
-  position: absolute;
-  right: 100px;
-  bottom: 20px;
-  width: 150px;
-  height: 150px;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 50%;
+
+@media (max-width: 960px) {
+  .hero {
+    height: 320px;
+  }
+
+  .hero-content {
+    padding: 28px 32px;
+  }
+
+  .hero-title {
+    font-size: 32px;
+  }
 }
 </style>
