@@ -11,6 +11,10 @@ class CollaborativeFilter:
         # sklearn 的 cosine_similarity 原生完美支持 scipy 稀疏矩阵，速度飞快
         self.user_sim = cosine_similarity(self.matrix)
 
+        #【新增】计算音乐相似度（Item-Item)
+        #对矩阵转置，将音乐作为行进行余弦相似度计算
+        self.music_sim = cosine_similarity(self.matrix.T)
+
     def recommend_for_user(self, user_id, top_n=10):
         if user_id not in self.user_ids:
             return []  # 冷启动兜底可以加在这里
@@ -48,3 +52,25 @@ class CollaborativeFilter:
         recommended_music_ids = [self.music_ids[i] for i in top_music_indices]
 
         return recommended_music_ids
+
+    def find_similar_musics(self, music_id, top_n=5):
+        """
+        根据音乐ID寻找相似音乐
+        """
+        # 1. 验证音乐是否存在
+        if music_id not in self.music_ids:
+            return []
+
+        # 2. 找到该音乐在矩阵中的列索引
+        idx = self.music_ids.index(music_id)
+
+        # 3. 从物品相似度矩阵中提取该音乐的得分向量
+        sim_scores = self.music_sim[idx]
+
+        # 4. 排序并取 Top N
+        # np.argsort 返回升序索引，[::-1] 翻转为降序[cite: 3]
+        # [1:top_n+1] 是为了跳过它自己（自己和自己的相似度永远是1.0）
+        similar_indices = np.argsort(sim_scores)[::-1][1:top_n + 1]
+
+        # 5. 将索引映射回真实的数据库 music_id
+        return [self.music_ids[i] for i in similar_indices]

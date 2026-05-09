@@ -11,7 +11,7 @@ def load_preference_data():
     SELECT u.user_id, m.music_id, 
            SUM(CASE WHEN ua.action_type = 'like' THEN 2 
                     WHEN ua.action_type = 'collect' THEN 3 
-                    WHEN ua.action_type = 'play' THEN 1 
+                    WHEN ua.action_type = 'play' THEN 1 *ua.play_count
                     ELSE 0 END) as score
     FROM user_actions ua
     JOIN users u ON ua.user_id = u.user_id
@@ -20,6 +20,10 @@ def load_preference_data():
     """
     df = pd.read_sql(query, engine)
 
+    # 如果数据库里查不到数据，做个保护机制
+    if df.empty:
+        print("警告：从数据库中没有查到任何用户行为数据！")
+        return None, [], []
     # 1. 提取独立的用户ID和音乐ID列表 (用于后期将索引映射回真实ID)
     user_ids = df['user_id'].astype('category').cat.categories.tolist()
     music_ids = df['music_id'].astype('category').cat.categories.tolist()
